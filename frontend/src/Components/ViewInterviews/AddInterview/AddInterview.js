@@ -34,7 +34,7 @@ const AddInterview = ({toggleAddComp, interview, createNew}) => {
         let res;
         //If an existing interview is to be edited. a Patch request is made
         if(!createNew) {
-            res = await fetch(`http://localhost:3000/${interview._id}`, {
+            res = await fetch(`https://interview-manager-heroku.herokuapp.com/${interview._id}`, {
                 method: 'PATCH',
                 headers: {
                     "content-type": "application/json"
@@ -48,7 +48,7 @@ const AddInterview = ({toggleAddComp, interview, createNew}) => {
             })
         } else {
             //Creating a new Interview
-            res = await fetch("http://localhost:3000", {
+            res = await fetch("https://interview-manager-heroku.herokuapp.com", {
                 method: 'POST',
                 headers: {
                     "content-type": "application/json"
@@ -75,7 +75,7 @@ const AddInterview = ({toggleAddComp, interview, createNew}) => {
     //Delete interview function
     async function deleteClicked() {
         try {
-            const res = await fetch(`http://localhost:3000/${interview._id}`, {
+            const res = await fetch(`https://interview-manager-heroku.herokuapp.com/${interview._id}`, {
                 method: 'DELETE'
             })
             if(res.status === 200) {

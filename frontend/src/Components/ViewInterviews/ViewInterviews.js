@@ -25,7 +25,7 @@ const ViewInterviews = () => {
 
     //To fetch all the interviews from the api
     useEffect(() => {
-        fetch('http://localhost:3000', {
+        fetch('https://interview-manager-heroku.herokuapp.com', {
             method: 'GET',    
         })
         .then(res => res.json())
