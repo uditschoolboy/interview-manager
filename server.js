@@ -15,9 +15,11 @@ app.use(cors());
 app.use(express.json());
 
 //Use Interview routes
-app.use(InterviewRoutes);
+//app.use(InterviewRoutes);
 
-
+app.get('/', (req, res) => {
+    res.send("h");
+})
 const PORTNO = process.env.PORT_NO || 5000;
 app.listen(PORTNO, () => {
     console.log(`Server running on PORT: ${PORTNO}`.yellow.bold);
