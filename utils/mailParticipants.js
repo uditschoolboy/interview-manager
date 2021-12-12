@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 
 async function sendMail(emailTo, interviewDetails) {
-    console.log(emailTo, " isko bhejna hai ");
+    console.log(emailTo, " is the receiver of mail");
     try {
         let transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
