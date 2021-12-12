@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const InterviewModel = require('../models/InterviewModel');
+const mailParticipants = require('../utils/mailParticipants');
+const {updateParticipantsTimeTable, validateParticipantsTimeTable, deleteParticipants} = require('../utils/participants');
 
 //GET localhost:3000 -> get all interviews
 router.get('/', async (req, res) => {
@@ -27,23 +29,49 @@ router.post('/', async (req, res) => {
     console.log(req.body);
     try {
         const interview = new InterviewModel(req.body);
-        await interview.save();
-        res.status(200).send("Successfully Created the interview");
+        const valid = await validateParticipantsTimeTable(interview.participants, interview.startTime, interview.endTime);
+        if(valid) {
+            await interview.save();
+            updateParticipantsTimeTable(interview.participants, interview.startTime, interview.endTime);
+            mailParticipants(interview.participants, interview);
+            res.status(200).send("Successfully Created the interview");
+        } else {
+            res.status(400).send("Couldn't create the interview. 'Some of the participants are busy at this time'")
+        }
     } catch(err) {
         console.log(err);
         res.status(400).send("Couldn't create the interview");
     }
 });
 
+//DELETE localhost:3000/id -> Delete an interview
+router.delete('/:id', async(req, res) => {
+    try {
+        const interview = await InterviewModel.findByIdAndDelete(req.params.id);
+        deleteParticipants(interview.participants, interview.startTime, interview.endTime);
+        res.status(200).send("Deleted");
+    } catch(err) {
+        res.status(400).send("couldn't delete the interview")
+    }
+
+});
+
+
 //PATCH localhost:3000/id -> Edit an interview
 router.patch('/:id', async (req, res) => {
     const interview = await InterviewModel.findById(req.params.id);
     if(interview) {
+        let oldSt = interview.startTime;
+        let oldEn = interview.endTime;
+        let oldParticipants = interview.participants;
         interview.startTime = req.body.startTime;
         interview.endTime = req.body.endTime;
         interview.title = req.body.title;
         interview.participants = req.body.participants;
         try {
+            deleteParticipants(oldParticipants, oldSt, oldEn);
+            mailParticipants(interview.participants, interview);
+            updateParticipantsTimeTable(interview.participants, interview.startTime, interview.endTime);
             await interview.save();
             res.status(200).json(interview);
         } catch(err) {

@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './AddInterview.css';
 
-const AddInterview = ({toggleAddComp, interview}) => {
+const AddInterview = ({toggleAddComp, interview, createNew}) => {
 
-    if(interview === null) {
+    if(createNew) {
         interview = {
             title: '',
             startTime: '',
@@ -11,15 +11,24 @@ const AddInterview = ({toggleAddComp, interview}) => {
             participants: ''
         }
     }
-    const [title, setTitle] = useState(interview.title);
-    const [startTime, setStartTime] = useState(interview.startTime)
-    const [endTime, setEndTime] = useState(interview.endTime)
-    const [participants, setParticipants] = useState(interview.participants)
+    const [title, setTitle] = useState('');
+    const [startTime, setStartTime] = useState('')
+    const [endTime, setEndTime] = useState('')
+    const [participants, setParticipants] = useState('')
+    useEffect(() => {
+        if(interview) {
+            setTitle(interview.title);
+            setStartTime(interview.startTime);
+            setEndTime(interview.endTime);
+            setParticipants(interview.participants);
+        }
+    }, [])
 
 
     async function createClicked() {
-        if(interview !== null) {
-            await fetch(`http://localhost:3000/${interview._id}`, {
+        let res;
+        if(!createNew) {
+            res = await fetch(`http://localhost:3000/${interview._id}`, {
                 method: 'PATCH',
                 headers: {
                     "content-type": "application/json"
@@ -32,7 +41,7 @@ const AddInterview = ({toggleAddComp, interview}) => {
                 })
             })
         } else {
-            await fetch("http://localhost:3000", {
+            res = await fetch("http://localhost:3000", {
                 method: 'POST',
                 headers: {
                     "content-type": "application/json"
@@ -45,8 +54,29 @@ const AddInterview = ({toggleAddComp, interview}) => {
                 })
             })
         }
+        if(res && res.status === 200) {
+            alert("Success");
+        } else {
+            alert("Couldn't create the interview");
+        }
         toggleAddComp(false, null);
 
+    }
+
+    async function deleteClicked() {
+        try {
+            const res = await fetch(`http://localhost:3000/${interview._id}`, {
+                method: 'DELETE'
+            })
+            if(res.status === 200) {
+                alert("Successfully deleted the interview");
+            } else {
+                alert("Couldn't delete");    
+            }
+        } catch(err) {
+            alert("Couldn't delete");
+        }
+        toggleAddComp(false, null);
     }
 
     return (
@@ -57,8 +87,9 @@ const AddInterview = ({toggleAddComp, interview}) => {
                 <input type="text" placeholder="End Time" value={endTime} onChange={e => setEndTime(e.target.value)}/>
                 <input type="text" placeholder="Participants Emails" value={participants} onChange={e => setParticipants(e.target.value)}/>
             </form>
-            <button onClick={createClicked}>Create</button>
+            <button onClick={createClicked}>{createNew ? 'Create' : 'Update'}</button>
             <button onClick={() => toggleAddComp(false, null)}>Back</button>
+            {createNew && <button onClick={deleteClicked}>Delete</button>}
         </div>
     )
 }

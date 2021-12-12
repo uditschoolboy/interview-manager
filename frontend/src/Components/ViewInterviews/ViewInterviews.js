@@ -7,9 +7,12 @@ const ViewInterviews = () => {
 
     const [interviews, setInterviews] = useState([])
     const [renderAddComp, setRenderAddComp] = useState(false);
-    function toggleAddComp(val, interview) {
+    const [createNew, setCreateNew] = useState(true);
+
+    function toggleAddComp(val, interview, newst) {
         setSelectedInterview(interview);
         setRenderAddComp(val);
+        setCreateNew(newst);
     }
     const [selectedInterview, setSelectedInterview] = useState(null);
 
@@ -24,16 +27,16 @@ const ViewInterviews = () => {
 
     if(renderAddComp) {
         return (
-            <AddInterview toggleAddComp = {toggleAddComp} interview={selectedInterview}/>
+            <AddInterview toggleAddComp = {toggleAddComp} interview={selectedInterview} createNew={createNew}/>
         );
     }
 
     return (
         <div>
-            <button onClick={() => toggleAddComp(true, null)}>Add Interview</button>
+            <button onClick={() => toggleAddComp(true, null, true)}>Add Interview</button>
             {interviews.map((interview, idx) => {
                 return (
-                    <div onClick={() => toggleAddComp(true, interview)} key={idx}>
+                    <div onClick={() => toggleAddComp(true, interview, false)} key={idx}>
                         <InterviewCard interview = {interview} key={idx}/>
                     </div>
                 );
