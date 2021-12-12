@@ -1,6 +1,6 @@
 # Interview-Manager
 
-## Frontend : https://interview-manager-heroku.herokuapp.com
+## Frontend : https://sleepy-pasteur-178877.netlify.app/
 
 ## Backend : https://interview-manager-heroku.herokuapp.com
 
