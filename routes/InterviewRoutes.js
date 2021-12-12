@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const InterviewModel = require('../models/InterviewModel');
 const mailParticipants = require('../utils/mailParticipants');
-const {updateParticipantsTimeTable, validateParticipantsTimeTable, deleteParticipants} = require('../utils/participants');
+const {updateParticipantsTimeTable, validateParticipantsTimeTable, deleteParticipants, validateCount} = require('../utils/participants');
 
 //GET localhost:3000 -> get all interviews
 router.get('/', async (req, res) => {
@@ -29,6 +29,9 @@ router.post('/', async (req, res) => {
     console.log(req.body);
     try {
         const interview = new InterviewModel(req.body);
+        if(!validateCount(interview.participants)) {
+            res.status(400).send({error: "At least 2 participants required for interview"});
+        }
         const valid = await validateParticipantsTimeTable(interview.participants, interview.startTime, interview.endTime);
         if(valid) {
             await interview.save();
@@ -36,7 +39,7 @@ router.post('/', async (req, res) => {
             mailParticipants(interview.participants, interview);
             res.status(200).send("Successfully Created the interview");
         } else {
-            res.status(400).send("Couldn't create the interview. 'Some of the participants are busy at this time'")
+            res.status(400).send({error: "Some participants are busy at this time"});
         }
     } catch(err) {
         console.log(err);
@@ -68,10 +71,16 @@ router.patch('/:id', async (req, res) => {
         interview.endTime = req.body.endTime;
         interview.title = req.body.title;
         interview.participants = req.body.participants;
+        if(!validateCount(interview.participants)) {
+            res.status(400).send({error: "At least 2 participants required for interview"});
+        }
         try {
             deleteParticipants(oldParticipants, oldSt, oldEn);
-            mailParticipants(interview.participants, interview);
+            if(!validateParticipantsTimeTable(interview.participants, interview)) {
+                res.status(400).send({error: "Some participants are busy at this time"});
+            }
             updateParticipantsTimeTable(interview.participants, interview.startTime, interview.endTime);
+            mailParticipants(interview.participants, interview);
             await interview.save();
             res.status(200).json(interview);
         } catch(err) {

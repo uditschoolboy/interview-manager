@@ -54,10 +54,11 @@ const AddInterview = ({toggleAddComp, interview, createNew}) => {
                 })
             })
         }
-        if(res && res.status === 200) {
+        const resJson = await res.json();
+        if(resJson && resJson.status === 200) {
             alert("Success");
         } else {
-            alert("Couldn't create the interview");
+            alert(resJson.error);
         }
         toggleAddComp(false, null);
 
@@ -80,7 +81,7 @@ const AddInterview = ({toggleAddComp, interview, createNew}) => {
     }
 
     return (
-        <div>
+        <div className="add-interview">
             <form>
                 <input type="text" placeholder="Enter Title for Interview" value={title} onChange={e => setTitle(e.target.value)}/>
                 <input type="text" placeholder="Start Time" value={startTime} onChange={e => setStartTime(e.target.value)}/>
@@ -89,7 +90,7 @@ const AddInterview = ({toggleAddComp, interview, createNew}) => {
             </form>
             <button onClick={createClicked}>{createNew ? 'Create' : 'Update'}</button>
             <button onClick={() => toggleAddComp(false, null)}>Back</button>
-            {createNew && <button onClick={deleteClicked}>Delete</button>}
+            {!createNew && <button onClick={deleteClicked}>Delete</button>}
         </div>
     )
 }

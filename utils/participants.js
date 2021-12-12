@@ -46,4 +46,9 @@ async function deleteParticipants(participants, startTime, endTime) {
         });
     });
 }
-module.exports = {validateParticipantsTimeTable, updateParticipantsTimeTable, deleteParticipants};
+
+function validateCount(participants) {
+    const participantsList = participants.split(' ');
+    return (participantsList.length > 1);
+}
+module.exports = {validateParticipantsTimeTable, updateParticipantsTimeTable, deleteParticipants, validateCount};

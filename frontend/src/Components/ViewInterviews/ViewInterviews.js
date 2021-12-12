@@ -32,13 +32,11 @@ const ViewInterviews = () => {
     }
 
     return (
-        <div>
-            <button onClick={() => toggleAddComp(true, null, true)}>Add Interview</button>
+        <div className="interviews-container">
+            <InterviewCard addButton={true} toggleAddComp={toggleAddComp}/>
             {interviews.map((interview, idx) => {
                 return (
-                    <div onClick={() => toggleAddComp(true, interview, false)} key={idx}>
-                        <InterviewCard interview = {interview} key={idx}/>
-                    </div>
+                    <InterviewCard interview = {interview} addButton={false} key={idx} toggleAddComp={toggleAddComp}/>
                 );
             })}
         </div>
