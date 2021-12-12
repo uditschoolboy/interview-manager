@@ -20,7 +20,7 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.send("h");
 })
-const PORTNO = process.env.PORT_NO || 5000;
+const PORTNO = process.env.PORT || 5000;
 app.listen(PORTNO, () => {
     console.log(`Server running on PORT: ${PORTNO}`.yellow.bold);
 })
