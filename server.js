@@ -7,6 +7,9 @@ const InterviewRoutes = require('./routes/InterviewRoutes');
 const connectDB = require('./utils/connectDB');
 connectDB();
 
+//cors middleware
+const cors = require('cors');
+app.use(cors());
 
 //Parse Json in request body
 app.use(express.json());
